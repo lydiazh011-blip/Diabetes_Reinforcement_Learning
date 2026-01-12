@@ -25,9 +25,6 @@ SAFETY_THRESHOLD = 90.0
 SEED_BASE = 2025
 
 
-# =========================
-# Dual PPO Controller
-# =========================
 class DualPPOController:
     def __init__(self, cap_h: float, cap_l: float, seed: int, days: int = 5):
         self.cap_h = float(cap_h)
@@ -100,10 +97,6 @@ class DualPPOController:
 
         return action
 
-
-# =========================
-# 单次 episode
-# =========================
 def run_dual_episode(cap_h: float, cap_l: float, threshold: float, seed: int) -> float:
     env = PaperEnv(
         patient_name=PATIENT_NAME,
@@ -144,9 +137,6 @@ def run_dual_episode(cap_h: float, cap_l: float, threshold: float, seed: int) ->
     return tir
 
 
-# =========================
-# Grid Search（mean ± std）
-# =========================
 def dual_ppo_grid_search():
     combos = [
         (h, l, th)
@@ -214,10 +204,6 @@ def dual_ppo_grid_search():
 
     return best_cfg
 
-
-# =========================
-# 主入口
-# =========================
 if __name__ == "__main__":
     print("=" * 70)
     print("Dual PPO Network Search (mean ± std)")
