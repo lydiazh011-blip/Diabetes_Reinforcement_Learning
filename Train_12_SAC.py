@@ -79,10 +79,10 @@ def train_single_cap(cap):
     vecnorm_path = f"{SAVE_DIR}/sac_vecnorm_cap_{cap:.2f}.pkl"
 
     if os.path.exists(model_path) and os.path.exists(vecnorm_path):
-        print(f"✅ SAC cap={cap:.2f} 已存在，跳过")
+        print(f"SAC cap={cap:.2f} skip")
         return
 
-    print(f"\n🚀 Training SAC | patient={PATIENT_NAME} | cap={cap:.2f}")
+    print(f"Training SAC | patient={PATIENT_NAME} | cap={cap:.2f}")
 
     env = make_env(PATIENT_NAME, cap, SEED)
 
