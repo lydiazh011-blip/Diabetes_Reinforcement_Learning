@@ -7,16 +7,10 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import timedelta
 from tqdm import tqdm
-
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+from rl_environment import PaperEnv
 
-from rl_env import PaperEnv
-
-
-# =========================
-# Config
-# =========================
 PATIENT_NAME = "adult#008"
 MODEL_DIR = f"Visualization_models/{PATIENT_NAME}"
 
@@ -37,17 +31,12 @@ FIG_TITLE = f"Simulation: Glucose Regulation using PPO Model ({PATIENT_NAME}, ca
 PRINT_EVERY = 120  # None 关闭
 
 
-CGM_PINK      = "#C75D7A"   # CGM 主曲线：深粉玫瑰
-TIR_PINK      = "#F6D6DE"   # TIR 阴影：浅粉
-INSULIN_BLUE  = "#4C72B0"   # Insulin：学术蓝（与 SAC 的 CGM 蓝“对调”）
-THRESH_BLUE   = "#2F4B7C"   # 阈值线：深蓝
-MEAL_PURPLE   = "#4B1D3F"   # 进食事件：深紫红
-GRID_GRAY     = "#DADADA"   # 网格灰
+CGM_PINK      = "#C75D7A"   
+TIR_PINK      = "#F6D6DE"   
+THRESH_BLUE   = "#2F4B7C"   
+MEAL_PURPLE   = "#4B1D3F"   
+GRID_GRAY     = "#DADADA"   
 
-
-# =========================
-# Helpers
-# =========================
 def _to_scalar_action(action):
     a = np.asarray(action).squeeze()
     if a.ndim == 0:
@@ -125,8 +114,6 @@ def rollout_one_day_with_meals_ppo(cap, seed, show_progress=True):
     obs, _ = env.reset()
 
     start_time = _get_start_time_safe(env)
-
-    # 进食事件：从 meal_array 读取（与 SAC 一致）
     meal_events = []
     meal_array = _get_meal_array_safe(env)
     if meal_array is not None:
@@ -166,10 +153,6 @@ def rollout_one_day_with_meals_ppo(cap, seed, show_progress=True):
     times = [start_time + timedelta(minutes=STEP_MINUTES * i) for i in range(len(cgm))]
     return times, cgm, insulin_rate, meal_events, start_time
 
-
-# =========================
-# Plot (subplot style like your SAC figure)
-# =========================
 def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_events, start_time):
     fig = plt.figure(figsize=(16, 5))
     gs = fig.add_gridspec(2, 1, height_ratios=[3, 1.3], hspace=0.05)
@@ -177,7 +160,6 @@ def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_event
     ax_cgm = fig.add_subplot(gs[0, 0])
     ax_ins = fig.add_subplot(gs[1, 0], sharex=ax_cgm)
 
-    # ---- CGM subplot ----
     ax_cgm.set_title(FIG_TITLE)
     ax_cgm.plot(
         times, cgm,
@@ -193,7 +175,6 @@ def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_event
 
     y_text = max(float(np.nanmax(cgm)) + 10.0, TIR_HIGH + 30.0)
 
-    # 注意：如果 episode 提前结束，只标注落在 times 范围内的 meal
     for step_idx, grams in meal_events:
         if 0 <= step_idx < len(times):
             t_meal = times[step_idx]
@@ -211,7 +192,6 @@ def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_event
     ax_cgm.grid(True, which="both", axis="both", color=GRID_GRAY, alpha=0.4)
     ax_cgm.legend(loc="upper right")
 
-    # ---- Insulin subplot ----
     width_days = (STEP_MINUTES / 60.0) / 24.0
     ax_ins.bar(
         times,
@@ -226,8 +206,6 @@ def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_event
     ax_ins.set_ylabel("Insulin [U/min]")
     ax_ins.set_xlabel("Time (hrs)")
     ax_ins.grid(True, which="both", axis="y", color=GRID_GRAY, alpha=0.4)
-
-    # log y（与你示例一致）
     ax_ins.set_yscale("log")
     if np.any(insulin_rate > 0):
         ymin = max(float(np.min(insulin_rate[insulin_rate > 0])), 1e-6)
@@ -236,13 +214,10 @@ def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_event
     ax_ins.set_ylim(ymin, max(float(np.max(insulin_rate)) * 1.2, ymin * 50))
 
     ax_ins.legend(loc="upper right")
-
-    # ---- x-axis formatting (same as SAC style) ----
     ax_ins.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 3, 6, 9, 12, 15, 18, 21]))
     ax_ins.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     ax_ins.xaxis.set_minor_locator(mdates.HourLocator(interval=1))
 
-    # 左右日期注释（与 SAC 一致）
     ax_ins.annotate(
         start_time.strftime("%b %d"),
         xy=(0, 0),
@@ -263,16 +238,12 @@ def plot_like_sac_subplots_opposite_palette(times, cgm, insulin_rate, meal_event
         va="top"
     )
 
-    # 上图不显示 x tick label
     plt.setp(ax_cgm.get_xticklabels(), visible=False)
 
     plt.tight_layout()
     plt.show()
 
 
-# =========================
-# Main
-# =========================
 if __name__ == "__main__":
     model_path = f"{MODEL_DIR}/agent_cap_{CAP:.2f}.zip"
     norm_path  = f"{MODEL_DIR}/vec_norm_cap_{CAP:.2f}.pkl"
