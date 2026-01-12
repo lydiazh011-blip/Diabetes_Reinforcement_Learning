@@ -4,7 +4,6 @@ To ensure that the research results have clinical relevance, This paper first se
 
 Based on this, this paper further independently implements the Dual-PPO control framework proposed in the literature \cite{ref5}, and conducts comparative experiments on different reinforcement learning models in the same simulation environment to verify the feasibility and performance of the PPO and SAC models in the insulin administration control task. 
 
-Experimental results indicate that PPO achieves TIR values ranging from 0.56 ± 0.05 to 0.93 ± 0.05, SAC achieves TIR values ranging from 0.61 ± 0.06 to 0.96 ± 0.02, and the Dual-PPO framework achieves TIR values ranging from 0.56 ± 0.14 to 0.93 ± 0.03 across 10 adult patients.
 
 
 Reference:
