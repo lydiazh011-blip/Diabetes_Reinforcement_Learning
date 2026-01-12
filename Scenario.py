@@ -41,8 +41,6 @@ class Table1Scenario(Scenario):
                 if self.rng.random() < prob:
                     time_h = self.rng.normal(mean_h, std_h)
                     minutes = int(round(time_h * 60))
-
-                    # 强制对齐到 3 分钟
                     remainder = minutes % 3
                     if remainder != 0:
                         minutes += (3 - remainder)
