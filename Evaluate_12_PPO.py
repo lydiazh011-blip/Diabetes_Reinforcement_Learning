@@ -18,11 +18,11 @@ MODEL_DIR = f"models/{PATIENT_NAME}"
 CAP_LIST = [0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
             0.10, 0.11, 0.12, 0.13, 0.14, 0.15]
 
-N_RUNS = 10            # 每个模型跑几次（调试 3–5 即可）
-MAX_STEPS = 2400     # 5 天
+N_RUNS = 10        
+MAX_STEPS = 2400    
 SEED_BASE = 2025
 
-PRINT_EVERY = 100    # step 级打印；设为 None 可关闭
+PRINT_EVERY = 100
 
 
 def run_single_episode(cap, seed, show_steps=True):
@@ -111,10 +111,6 @@ def eval_cap(cap):
 
     return float(np.mean(tirs)), float(np.std(tirs))
 
-
-# =====================================================
-# 可视化：Cap vs TIR
-# =====================================================
 def plot_cap_vs_tir(results):
     caps = [r[0] for r in results]
     mean_tirs = [r[1] for r in results]
@@ -136,10 +132,6 @@ def plot_cap_vs_tir(results):
     plt.tight_layout()
     plt.show()
 
-
-# =====================================================
-# 可视化：单个 episode（CGM + action）
-# =====================================================
 def plot_episode(cgm, actions, cap, seed):
     t = np.arange(len(cgm)) * 3 / 60  # hours
 
@@ -161,10 +153,6 @@ def plot_episode(cgm, actions, cap, seed):
     fig.tight_layout()
     plt.show()
 
-
-# =====================================================
-# 主入口
-# =====================================================
 if __name__ == "__main__":
     print("=" * 70)
     print("Single PPO Evaluation + Visualization")
@@ -191,7 +179,6 @@ if __name__ == "__main__":
             STD=f"{std_tir:.3f}"
         )
 
-    # ===== 汇总可视化 =====
     if results:
         best = max(results, key=lambda x: x[1])
 
@@ -204,8 +191,6 @@ if __name__ == "__main__":
         print("=" * 70)
 
         plot_cap_vs_tir(results)
-
-        # 画最佳 cap 的一个 episode
         tir, actions, cgm = run_single_episode(
             best[0],
             seed=SEED_BASE,
