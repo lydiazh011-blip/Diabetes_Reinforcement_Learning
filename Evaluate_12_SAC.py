@@ -6,7 +6,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from stable_baselines3 import SAC
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from rl_env import PaperEnv
+from rl_env import DiabetesEnv
 
 
 PATIENT_NAME = "adult#010"
@@ -35,16 +35,14 @@ def _to_scalar_action(action):
 
 
 def run_single_episode(cap, seed, show_steps=True):
-    # 用于真实交互的原始 env（不做 normalize）
-    env = PaperEnv(
+    env = DiabetesEnv(
         patient_name=PATIENT_NAME,
         insulin_cap=cap,
         seed=seed
     )
 
-    # 用于加载 VecNormalize 的 dummy vec env（只用来 normalize_obs）
     def env_fn():
-        return PaperEnv(
+        return DiabetesEnv(
             patient_name=PATIENT_NAME,
             insulin_cap=cap,
             seed=seed
@@ -58,7 +56,6 @@ def run_single_episode(cap, seed, show_steps=True):
     venv.training = False
     venv.norm_reward = False
 
-    # 加载 SAC 模型
     model = SAC.load(
         f"{MODEL_DIR}/sac_cap_{cap:.2f}.zip",
         env=venv
@@ -98,15 +95,12 @@ def run_single_episode(cap, seed, show_steps=True):
 
     cgm_arr = np.asarray(cgm_trace, dtype=np.float32)
     action_arr = np.asarray(action_trace, dtype=np.float32)
-
     tir = float(np.mean((cgm_arr >= 70) & (cgm_arr <= 180)))
-
     return tir, action_arr, cgm_arr
 
 
 def eval_cap(cap):
     tirs = []
-
     run_iter = tqdm(
         range(N_RUNS),
         desc=f"Runs for cap={cap:.2f}",
