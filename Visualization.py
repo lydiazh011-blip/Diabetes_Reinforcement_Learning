@@ -9,7 +9,7 @@ from datetime import timedelta
 from tqdm import tqdm
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from rl_environment import PaperEnv
+from rl_environment import DiabetesEnv
 
 PATIENT_NAME = "adult#008"
 MODEL_DIR = f"Visualization_models/{PATIENT_NAME}"
@@ -20,7 +20,6 @@ SEED = 2025
 STEP_MINUTES = 3
 STEPS_PER_DAY = 24 * 60 // STEP_MINUTES  
 PLOT_STEPS = STEPS_PER_DAY               
-
 LOW_DASH = 50
 HIGH_DASH = 300
 
@@ -45,9 +44,8 @@ def _to_scalar_action(action):
 
 
 def make_venv_for_vecnorm(cap, seed):
-    """创建 DummyVecEnv，并加载 VecNormalize（与训练一致）"""
     def env_fn():
-        return PaperEnv(
+        return DiabetesEnv(
             patient_name=PATIENT_NAME,
             insulin_cap=cap,
             seed=seed
@@ -63,7 +61,6 @@ def make_venv_for_vecnorm(cap, seed):
 
 
 def _get_meal_array_safe(env):
-    """优先从 env.meal_array 读取；必要时尝试 env._env.meal_array"""
     if hasattr(env, "meal_array"):
         try:
             arr = np.asarray(env.meal_array, dtype=np.float32)
@@ -94,7 +91,7 @@ def _get_start_time_safe(env):
 
 
 def rollout_one_day_with_meals_ppo(cap, seed, show_progress=True):
-    env = PaperEnv(
+    env = DiabetesEnv(
         patient_name=PATIENT_NAME,
         insulin_cap=cap,
         seed=seed
