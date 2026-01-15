@@ -18,8 +18,8 @@ CAP = 0.08
 SEED = 2025
 
 STEP_MINUTES = 3
-STEPS_PER_DAY = 24 * 60 // STEP_MINUTES  # 480
-PLOT_STEPS = STEPS_PER_DAY               # 只画 1 天
+STEPS_PER_DAY = 24 * 60 // STEP_MINUTES  
+PLOT_STEPS = STEPS_PER_DAY               
 
 LOW_DASH = 50
 HIGH_DASH = 300
@@ -28,7 +28,7 @@ TIR_LOW = 70
 TIR_HIGH = 180
 
 FIG_TITLE = f"Simulation: Glucose Regulation using PPO Model ({PATIENT_NAME}, cap={CAP:.2f})"
-PRINT_EVERY = 120  # None 关闭
+PRINT_EVERY = 120  
 
 
 CGM_PINK      = "#C75D7A"   
@@ -82,22 +82,17 @@ def _get_meal_array_safe(env):
 
 
 def _get_start_time_safe(env):
-    """尽量复用 scenario.start_time，用于 datetime x 轴"""
-    # 你 SAC 版本用的是 env._env.scenario.start_time
     if hasattr(env, "_env") and hasattr(env._env, "scenario") and hasattr(env._env.scenario, "start_time"):
         return env._env.scenario.start_time
-    # 有些实现可能是 env.scenario.start_time
+
     if hasattr(env, "scenario") and hasattr(env.scenario, "start_time"):
         return env.scenario.start_time
-    # fallback：没有就用“今天 00:00”
+
     import datetime as _dt
     now = _dt.datetime.now()
     return _dt.datetime(now.year, now.month, now.day, 0, 0, 0)
 
 
-# =========================
-# Rollout
-# =========================
 def rollout_one_day_with_meals_ppo(cap, seed, show_progress=True):
     env = PaperEnv(
         patient_name=PATIENT_NAME,
