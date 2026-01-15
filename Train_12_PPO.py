@@ -53,11 +53,11 @@ def make_env(patient_name, insulin_cap, seed):
 
 def save_log_csv(env, filepath, cap):
     if not hasattr(env, "log_buffer"):
-        print("env 中不存在 log_buffer，未保存 CSV")
+        print("no env")
         return
 
     if len(env.log_buffer) == 0:
-        print("log_buffer 为空，未保存 CSV")
+        print("log_buffer empty")
         return
 
     df = pd.DataFrame(env.log_buffer)
@@ -71,7 +71,7 @@ def train_single_cap(cap):
     csv_path = f"{SAVE_DIR}/log_cap_{cap:.2f}.csv"
 
     if os.path.exists(model_path) and os.path.exists(vecnorm_path):
-        print(f"✅ cap={cap:.2f} 已存在，跳过")
+        print(f"cap={cap:.2f} exist, skip")
         return
 
     print(f"Training PPO | patient={PATIENT_NAME} | cap={cap:.2f}")
@@ -102,7 +102,7 @@ def train_single_cap(cap):
     save_log_csv(raw_env, csv_path, cap)
 
     env.close()
-    print(f"✅ Finished cap={cap:.2f}")
+    print(f"Finished cap={cap:.2f}")
 
 
 if __name__ == "__main__":
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         train_single_cap(cap)
 
     print("\n" + "=" * 70)
-    print("🎉 All 12 PPO models trained successfully.")
+    print("All 12 PPO models trained successfully.")
     print(f"Saved in: {SAVE_DIR}")
     print("Next step: Dual PPO network search (Section 3.7)")
     print("=" * 70)
