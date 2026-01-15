@@ -1,15 +1,12 @@
 import warnings
 warnings.filterwarnings("ignore")
-
 import os
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-
-from rl_env import PaperEnv
+from rl_env import DiabetesEnv
 
 
 PATIENT_NAME = "adult#007"
@@ -26,14 +23,14 @@ PRINT_EVERY = 100
 
 
 def run_single_episode(cap, seed, show_steps=True):
-    env = PaperEnv(
+    env = DiabetesEnv(
         patient_name=PATIENT_NAME,
         insulin_cap=cap,
         seed=seed
     )
 
     def env_fn():
-        return PaperEnv(
+        return DiabetesEnv(
             patient_name=PATIENT_NAME,
             insulin_cap=cap,
             seed=seed
@@ -67,9 +64,7 @@ def run_single_episode(cap, seed, show_steps=True):
     for step in steps:
         obs_norm = venv.normalize_obs(obs.reshape(1, -1))
         action, _ = model.predict(obs_norm, deterministic=True)
-
         obs, _, done, truncated, _ = env.step(action)
-
         cgm = obs[0]
         cgm_trace.append(cgm)
         action_trace.append(action.item())
@@ -82,12 +77,10 @@ def run_single_episode(cap, seed, show_steps=True):
         if done or truncated:
             break
 
-    env.close()
-
+    env.close(
     cgm = np.array(cgm_trace)
     action_trace = np.array(action_trace)
     tir = float(np.mean((cgm >= 70) & (cgm <= 180)))
-
     return tir, action_trace, cgm
 
 
