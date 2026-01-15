@@ -9,7 +9,7 @@ from custom_scenario_1 import Table1Scenario
 from datetime import datetime
 
 
-class PaperEnv(gym.Env):
+class DiabetesEnv(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 4}
 
     def __init__(
