@@ -1,14 +1,11 @@
 import warnings
 warnings.filterwarnings("ignore")
-
 import os
 import numpy as np
 from tqdm import tqdm
-
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-
-from rl_env import PaperEnv
+from rl_env import DiabetesEnv
 
 
 PATIENT_NAME = "adult#001"
@@ -33,7 +30,7 @@ class DualPPOController:
         self.days = int(days)
 
         def env_h_fn():
-            return PaperEnv(
+            return DiabetesEnv(
                 patient_name=PATIENT_NAME,
                 insulin_cap=self.cap_h,
                 seed=self.seed,
@@ -42,7 +39,7 @@ class DualPPOController:
             )
 
         def env_l_fn():
-            return PaperEnv(
+            return DiabetesEnv(
                 patient_name=PATIENT_NAME,
                 insulin_cap=self.cap_l,
                 seed=self.seed,
@@ -82,10 +79,8 @@ class DualPPOController:
 
     def act(self, obs: np.ndarray, threshold: float) -> np.ndarray:
         cgm = float(obs[0])
-
         if cgm < SAFETY_THRESHOLD:
             return np.array([0.0], dtype=np.float32)
-
         obs_batch = obs.reshape(1, -1)
 
         if cgm >= float(threshold):
@@ -98,7 +93,7 @@ class DualPPOController:
         return action
 
 def run_dual_episode(cap_h: float, cap_l: float, threshold: float, seed: int) -> float:
-    env = PaperEnv(
+    env = DiabetesEnv(
         patient_name=PATIENT_NAME,
         insulin_cap=float(cap_h),
         seed=int(seed),
@@ -120,10 +115,8 @@ def run_dual_episode(cap_h: float, cap_l: float, threshold: float, seed: int) ->
 
     for _ in range(steps):
         cgm_trace.append(float(obs[0]))
-
         action = controller.act(obs, threshold=threshold)
         obs, _, done, truncated, _ = env.step(action)
-
         if done or truncated:
             break
 
@@ -150,7 +143,6 @@ def dual_ppo_grid_search():
 
     print(f"\n[INFO] Total combinations: {len(combos)}")
     print(f"[INFO] Total episodes: {len(combos) * N_RUNS}\n")
-
     outer_bar = tqdm(combos, desc="Dual PPO Grid Search", ncols=120)
 
     for idx, (cap_h, cap_l, th) in enumerate(outer_bar, start=1):
