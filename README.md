@@ -7,7 +7,9 @@
 
 
 Reference:
+
 [1] Xie, J. (2021). jxx123/simglucose. [online] GitHub. Available at: https://github.com/jxx123/simglucose.
+
 [2] Marchetti, A., Sasso, D., D’Antoni, F., Morandin, F., Parton, M., Matarrese, M.A.G. and Merone, M. (2025). Deep reinforcement learning for Type 1 Diabetes: Dual PPO controller for personalized insulin management. Computers in Biology and Medicine, 191, p.110147. doi:https://doi.org/10.1016/j.compbiomed.2025.110147.
 
 ‌
