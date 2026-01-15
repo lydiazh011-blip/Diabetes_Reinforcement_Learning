@@ -2,7 +2,7 @@ In this project, based on the FDA-approved UVA/Padova type 1 diabetes physiologi
 
 To ensure that the research results have clinical relevance, This paper first selects two representative actor-critic reinforcement learning algorithms - Proximal Policy Optimization (PPO) and Soft Actor-Critic, systematically analyzing the performance differences between on-policy and off-policy methods in multi-day blood glucose regulation tasks. 
 
-Based on this, this paper further independently implements the Dual-PPO control framework proposed in the literature \cite{ref5}, and conducts comparative experiments on different reinforcement learning models in the same simulation environment to verify the feasibility and performance of the PPO and SAC models in the insulin administration control task. 
+Based on this, this paper further independently implements the Dual-PPO control framework proposed in the literature [1], and conducts comparative experiments on different reinforcement learning models in the same simulation environment to verify the feasibility and performance of the PPO and SAC models in the insulin administration control task. 
 
 
 
