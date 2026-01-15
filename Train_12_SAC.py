@@ -11,7 +11,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.callbacks import BaseCallback
 from tqdm import tqdm
 
-from rl_env import PaperEnv
+from rl_env import DiabetesEnv
 
 
 SEED = 2025
